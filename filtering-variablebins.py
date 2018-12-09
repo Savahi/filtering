@@ -41,29 +41,15 @@ TICKER = "btcusd" # The ticker.
 TRAIN_VS_TEST = 0.75
 SRC_FORMAT = 'platform'
 
-start_test_date = None
-end_test_date = None
-
-candles = None
-
-trades = {}
-
-data = {}
-
-num_models = 0
-models = []
-
-scaler = None
-
 for a in range(2, len(sys.argv)): # Reading additional parameters
 	m = re.match(r'([a-zA-Z0-9\_ ]+=[0-9a-zA-Z \.\'\_]+)', sys.argv[a])
 	if m:
 		exec(m.group(1))
 
-def load_data():
-	global candles, trades, data, num_classes, scaler
-
-	data['train_inputs'] = []
+def load_data( src_format, ticker, timeframe, calculate_input_fn, lookback_candles, threshold_abs, threshold_pct, \
+            train_vs_test = 0.75, use_weights_for_classes = False ):
+	
+    data['train_inputs'] = []
 	data['train_outputs'] = []
 	data['train_profit'] = []
 	data['train_profit_pct'] = []
@@ -74,16 +60,16 @@ def load_data():
 	data['test_profit_pct'] = []
 	data['test_trade_num'] = []
 
-	if SRC_FORMAT == 'platform': 
+	if src_format == 'platform': 
 		trades = utils.read_trades(sys.argv[1])
 	else:
 		trades = utils.read_trades_2(sys.argv[1])
 	if len(trades) == 0:
-		return False
+		return None
 
 	trades = utils.trim_trades( trades )
 	if len(trades) == 0:
-		return False
+		return None
 
 	# Searching for min & max... 
 	dt_min = trades[0]['time_dt']
@@ -95,19 +81,19 @@ def load_data():
 			dt_max = trades[i]['closing_time_dt']
 
 	# Calculating train and test starting and ending dates
-	dt_start = dt_min - timedelta(minutes = TIMEFRAME*(LOOKBACK_CANDLES+1))
-	dt_end = dt_max + timedelta(minutes=TIMEFRAME*2)
+	dt_start = dt_min - timedelta(minutes = timeframe * (lookback_candles + 1))
+	dt_end = dt_max + timedelta(minutes=timeframe*2)
 	num_days = (dt_max - dt_min).days
-	num_days_in_test = int(num_days * TRAIN_VS_TEST)
+	num_days_in_test = int(num_days * train_vs_test)
 	dt_train_end = dt_min + timedelta(num_days_in_test)
 
-	print( 'DATES INVOLVED: start: %s, end: %s, train end: %s' % ( str(dt_start), str(dt_end), str(dt_train_end) ) )
+	sys.stderr.write( 'DATES INVOLVED: start: %s, end: %s, train end: %s' % ( str(dt_start), str(dt_end), str(dt_train_end) ) )
 
 	# Importing candles...
-	candles = import_candles(TICKER, TIMEFRAME, dt_start, dt_end)
+	candles = import_candles(ticker, timeframe, dt_start, dt_end)
 
 	utils.merge_candles_and_trades( candles, trades )
-	utils.calculate_inputs( candles, trades, data, calculate_input, LOOKBACK_CANDLES )
+	utils.calculate_inputs( candles, trades, data, calculate_input_fn, lookback_candles )
 
 	# Searching for "good" and "bad" trades... 
 	num_bad = 0
@@ -115,7 +101,7 @@ def load_data():
 	for t in range(len(data['trade_num'])):
 		profit = data['profit'][t]
 		profit_pct = data['profit_pct'][t]
-		if profit > THRESHOLD_ABS and profit_pct > THRESHOLD_PCT:
+		if profit > threshold_abs and profit_pct > threshold_pct:
 			data['outputs'][t] = [0,1]
 			num_good += 1
 		else:
@@ -127,24 +113,25 @@ def load_data():
 	num_classes = int( float(num_bad) / float(num_good) + 0.9 ) + 1
 	print("num_classes=%d"%(num_classes))
 	if num_classes > 1:
-		trades_sorted = [ x for _, x in sorted(zip( data['profit_pct'], data['trade_num'] )) ] # Trade numbers sorted by profit 
-		for b in range(num_classes): # For each bin 
-			startIndex = int( b * (num_good + num_bad) / (num_classes) ) # Starting and ending indexes within the trades_sorted array
-			endIndex = int( (b+1) * (num_good + num_bad) / (num_classes) )
+        if not use_weight_for_classes:
+    		trades_sorted = [ x for _, x in sorted(zip( data['profit_pct'], data['trade_num'] )) ] # Trade numbers sorted by profit 
+    		for b in range(num_classes): # For each bin 
+    			startIndex = int( b * (num_good + num_bad) / (num_classes) ) # Starting and ending indexes within the trades_sorted array
+    			endIndex = int( (b+1) * (num_good + num_bad) / (num_classes) )
 
-			output = [] # Assigning a "one-hot" output with the right significant bin... 
-			for i in range( num_classes ):
-				if i == b:
-					output.append(1)
-				else:
-					output.append(0)
+    			output = [] # Assigning a "one-hot" output with the right significant bin... 
+    			for i in range( num_classes ):
+    				if i == b:
+    					output.append(1)
+    				else:
+    					output.append(0)
 
-			for i in range( startIndex, endIndex ):
-				trade_num = trades_sorted[i] #
-				for t in range(len(data['trade_num'])): # Searching for train data related to "trade_num" trade...
-					if data['trade_num'][t] == trade_num:
-						data['outputs'][t] = output
-						break;
+    			for i in range( startIndex, endIndex ):
+    				trade_num = trades_sorted[i] #
+    				for t in range(len(data['trade_num'])): # Searching for train data related to "trade_num" trade...
+    					if data['trade_num'][t] == trade_num:
+    						data['outputs'][t] = output
+    						break
 	else:
 		print("ACCORDING TO THE SETTINGS SPECIFIED THERE IS ONLY ONE CLASS IN THE SAMPLE SET. Exiting...")
 		sys.exit();
@@ -173,7 +160,8 @@ def load_data():
 	scaler.fit(data['train_inputs']) # Fitting the scaler.
 	data['train_inputs'] = scaler.transform(data['train_inputs']) # Normalizing data
 
-	return True
+	return {'data':data, 'candles':candles , 'trades':trades, 'scaler':scaler, 
+        'num_classes':num_classes, 'num_good':num_good, 'num_bad':num_bad, }
 # end of load_data
 
 
@@ -187,7 +175,10 @@ def load_data_and_trainmodel():
 	inputs = data['train_inputs']
 	outputs = data['train_outputs']
 	model = create_model() # Creating a model
-	model.fit( inputs, outputs, epochs=EPOCHS ) # Training the model
+    if not USE_WEIGHTS_FOR_CLASSES:
+	   model.fit( inputs, outputs, epochs=EPOCHS ) # Training the model
+    else:
+        model.fit( inputs, outputs, epochs=EPOCHS )
 	models.append( model )
 	num_models = 1
 
