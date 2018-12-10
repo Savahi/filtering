@@ -30,6 +30,12 @@ python3 e.py data/ivan/tr_decis_n_1_e_362.csv SRC_FORMAT=\'nn\' TIMEFRAME=15 TIC
 python3 e.py data/ivan/tr_decis_n_1_e_491.csv SRC_FORMAT=\'nn\' TIMEFRAME=15 TICKER=\'btcusd\' >> e.txt
 python3 e.py data/ivan/tr_decis_n_1_e_497.csv SRC_FORMAT=\'nn\' TIMEFRAME=15 TICKER=\'btcusd\' >> e.txt
 python3 e.py data/ivan/tr_decis_n_2_e_266.csv SRC_FORMAT=\'nn\' TIMEFRAME=15 TICKER=\'btcusd\' >> e.txt
+python3 e.py data/sava/14151.csv TIMEFRAME=15 TICKER=\'btcusd\' >> e.txt
 """
 
-python3 e.py data/sava/14151.csv TIMEFRAME=15 TICKER=\'btcusd\' >> e.txt
+
+python3 e.py data/ivan/tr_decis_n_2_e_346.csv SRC_FORMAT=\'nn\' TIMEFRAME=15 TICKER=\'btcusd\' >> e.txt
+python3 e.py data/ivan/tr_decis_n_2_e_393.csv SRC_FORMAT=\'nn\' TIMEFRAME=15 TICKER=\'btcusd\' >> e.txt
+python3 e.py data/ivan/tr_decis_n_3_e_390.csv SRC_FORMAT=\'nn\' TIMEFRAME=15 TICKER=\'btcusd\' >> e.txt
+python3 e.py data/ivan/tr_decis_n_3_e_446.csv SRC_FORMAT=\'nn\' TIMEFRAME=15 TICKER=\'btcusd\' >> e.txt
+python3 e.py data/ivan/tr_decis_n_3_e_487.csv SRC_FORMAT=\'nn\' TIMEFRAME=15 TICKER=\'btcusd\' >> e.txt
