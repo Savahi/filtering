@@ -1,0 +1,20 @@
+File, Num. of Trades, Num. of Trades Allowed, +, -, Profit, Optimized Profit
+data/abgar/btc/1.csv, 44, 0, 0, 0, 1870.680000, 0.000000
+data/abgar/btc/2.csv, 79, 48, 13, 35, 2314.680000, 1924.010000
+data/abgar/btc/4.csv, 80, 0, 0, 0, 1478.020000, 0.000000
+data/abgar/btc/1.csv, 44, 6, 1, 5, 1870.680000, 196.600000
+data/abgar/btc/2.csv, 79, 10, 1, 9, 2314.680000, -139.320000
+data/abgar/btc/4.csv, 80, 7, 1, 6, 1478.020000, 188.830000
+data/ivan/tr_decis_n_0_e_288.csv, 125, 42, 6, 36, 461.540000, 601.680000
+data/ivan/tr_decis_n_0_e_288.csv, 125, 27, 6, 21, 461.540000, 578.190000
+data/ivan/tr_decis_n_0_e_330.csv, 135, 25, 1, 24, -369.980000, -305.230000
+data/ivan/tr_decis_n_0_e_369.csv, 142, 0, 0, 0, -583.080000, 0.000000
+data/ivan/tr_decis_n_1_e_491.csv, 139, 13, 1, 12, 1229.160000, 42.300000
+data/ivan/tr_decis_n_1_e_497.csv, 130, 28, 4, 24, 163.700000, -186.070000
+data/ivan/tr_decis_n_2_e_266.csv, 84, 14, 2, 12, 1959.840000, 2170.900000
+data/ivan/tr_decis_n_0_e_288.csv, 125, 16, 2, 14, 461.540000, -773.910000
+data/ivan/tr_decis_n_0_e_330.csv, 135, 20, 4, 16, -369.980000, 368.140000
+data/ivan/tr_decis_n_0_e_369.csv, 142, 11, 1, 10, -583.080000, -468.700000
+data/ivan/tr_decis_n_1_e_491.csv, 139, 14, 1, 13, 1229.160000, 159.990000
+data/ivan/tr_decis_n_1_e_497.csv, 130, 6, 2, 4, 163.700000, -101.070000
+data/ivan/tr_decis_n_2_e_266.csv, 84, 12, 1, 11, 1959.840000, 1723.200000

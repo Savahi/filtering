@@ -102,7 +102,7 @@ def calculate_potential_returns( candles, trades, pnl, prefix='_' ):
 		trades[t]['worst'] = worst_worst 
 
 
-def calculate_inputs(candles, trades, data, calculate_input, lookback_candles):
+def calculate_all_inputs(candles, trades, data, calculate_input, lookback_candles):
 	len_trades = len(trades)
 	data['inputs'] = [None]*len_trades
 	data['outputs'] = [None]*len_trades
@@ -136,7 +136,10 @@ def merge_candles_and_trades(candles, trades):
 				trades[t]['opening_at_candle_start'] = True
 				candle_found = True
 			elif candles['time'][c] > trades[t]['time']:
-				trades[t]['opening_candle'] = c+1
+				if c < len_candles-1:
+					trades[t]['opening_candle'] = c+1
+				else:
+					trades[t]['opening_candle'] = c
 				trades[t]['opening_at_candle_start'] = False
 				candle_found = True
 			if not candle_found:
@@ -148,7 +151,10 @@ def merge_candles_and_trades(candles, trades):
 					trades[t]['closing_at_candle_start'] = True
 					break
 				if candles['time'][c2] > trades[t]['closing_time']: # The candle related to a trade is found...
-					trades[t]['closing_candle'] = c2+1
+					if c2 < len_candles-1:
+						trades[t]['closing_candle'] = c2+1
+					else:
+						trades[t]['closing_candle'] = c2						
 					trades[t]['closing_at_candle_start'] = False
 					break
 			break
@@ -439,7 +445,7 @@ def load_trades_and_candles( src, src_format, ticker, timeframe, extra_lookback_
 
 def calculate_data_and_train_models(candles, trades, create_model_fn, calculate_input_fn, threshold_abs=0.0, threshold_pct=0.0, \
 			train_vs_test=0.75, use_weights_for_classes=False, use_2_classes_with_random_pick=False, 
-			num_models=1, num_epochs=1000, model_type='nn'):
+			num_models=1, num_epochs=1000, verbose=False):
 	data = {}
 	data['train_inputs'] = []
 	data['train_outputs'] = []
@@ -453,12 +459,14 @@ def calculate_data_and_train_models(candles, trades, create_model_fn, calculate_
 	data['test_trade_num'] = []
 
 	lookback_candles, num_features = calculate_input_fn('query_input')
-	calculate_inputs( candles, trades, data, calculate_input_fn, lookback_candles )
+	calculate_all_inputs( candles, trades, data, calculate_input_fn, lookback_candles )
+
+	one_hot = create_model_fn('query_one_hot')
 
 	# Searching for "good" and "bad" trades... 
 	num_bad = 0
 	num_good = 0
-	if model_type == 'nn':
+	if one_hot:
 		output_good = [0,1]
 		output_bad = [1,0]
 	else:
@@ -487,7 +495,7 @@ def calculate_data_and_train_models(candles, trades, create_model_fn, calculate_
 				startIndex = int( b * (num_good + num_bad) / (num_classes) ) # Starting and ending indexes within the trades_sorted array
 				endIndex = int( (b+1) * (num_good + num_bad) / (num_classes) )
 
-				if model_type == 'nn': # Assigning a "one-hot" output with the right significant bin... 
+				if one_hot: # Assigning a "one-hot" output with the right significant bin... 
 					output = [] 
 					for i in range( num_classes ):
 						if i == b:
@@ -544,12 +552,12 @@ def calculate_data_and_train_models(candles, trades, create_model_fn, calculate_
 		num_trades = num_good + num_bad
 		for m in range(num_models):
 			cw = { 0: int(num_good*100.0/num_trades), 1: int(num_bad*100.0/num_trades) }
-			if model_type == 'nn': # A NN
+			if one_hot: # A NN
 				model = create_model_fn(num_features, num_classes) # Creating a model
-				model.fit(inputs, outputs, epochs=num_epochs, class_weight=cw)
+				model.fit(inputs, outputs, epochs=num_epochs, class_weight=cw, verbose=verbose)
 			else: # An SVM
 				model = create_model_fn(num_epochs, cw) # Creating a model
-				model.fit(inputs, outputs)				
+				model.fit(inputs, outputs, verbose=verbose)				
 			models.append( model )
 	elif use_2_classes_with_random_pick:
 		num_models = int( float(num_bad) / float(num_good) + 0.9 )
@@ -562,7 +570,7 @@ def calculate_data_and_train_models(candles, trades, create_model_fn, calculate_
 					# random pick
 					while(True):
 						random_pick = randint(0, len_outputs-1)
-						if model_type == 'nn': # A NN
+						if one_hot: # A NN
 							if data['train_outputs'][random_pick][1] == 1:
 								continue
 						else: # An SVM
@@ -575,23 +583,23 @@ def calculate_data_and_train_models(candles, trades, create_model_fn, calculate_
 			else:
 				inputs = data['train_inputs']
 				outputs = data['train_outputs']
-			if model_type == 'nn':
+			if one_hot:
 				model = create_model_fn(num_features, num_classes) # Creating a model
-				model.fit( inputs, outputs, epochs=num_epochs ) # Training the model
+				model.fit( inputs, outputs, epochs=num_epochs, verbose=verbose ) # Training the model
 			else:
 				model = create_model_fn(num_epochs) # Creating a model
-				model.fit( inputs, outputs ) # Training the model				
+				model.fit( inputs, outputs, verbose=verbose ) # Training the model				
 			models.append( model )
 	else:
 		inputs = data['train_inputs']
 		outputs = data['train_outputs']
 		for m in range(num_models):
-			if model_type == 'nn':
+			if one_hot:
 				model = create_model_fn(num_features, num_classes) # Creating a model
-				model.fit( inputs, outputs, epochs=num_epochs ) # Training the model
+				model.fit( inputs, outputs, epochs=num_epochs, verbose=verbose ) # Training the model
 			else:
 				model = create_model_fn(num_epochs) # Creating a model
-				model.fit( inputs, outputs ) # Training the model				
+				model.fit( inputs, outputs, verbose=verbose ) # Training the model				
 			models.append( model )
 
 	return { 'data':data, 'scaler':scaler, 'models':models, 'num_classes':num_classes, 'num_good':num_good, 'num_bad':num_bad }

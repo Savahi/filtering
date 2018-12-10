@@ -5,21 +5,11 @@ if len(sys.argv) < 2:
 
 from datetime import datetime, timedelta
 from tradingene.data.load import import_data, import_candles
-from tradingene.algorithm_backtest.tng import TNG
-import tradingene.backtest_statistics.backtest_statistics as bs
-from sklearn.preprocessing import StandardScaler
-from keras.models import Sequential
-from keras.layers import Dense, Dropout
-from keras.initializers import he_normal, he_uniform
-from keras.layers.normalization import BatchNormalization
-import tradingene.ind.ti as ti
-import keras
 import numpy as np
-import utils
 import matplotlib.pyplot as plt 
 from random import randint
-from operator import itemgetter
 import re 
+import futils
 
 TIMEFRAME = 30 # The time frame.
 TICKER = "btcusd" # The ticker.
@@ -38,7 +28,7 @@ candles = None
 trades = {}
 
 for a in range(2, len(sys.argv)): # Reading additional parameters
-	m = re.match(r'([a-zA-Z0-9\_ ]+=[0-9a-zA-Z \.\'\_]+)', sys.argv[a])
+	m = re.match(r'([a-zA-Z0-9\_ ]+=[0-9a-zA-Z \.\'\"\_]+)', sys.argv[a])
 	if m:
 		exec(m.group(1))
 
@@ -46,26 +36,26 @@ def load_data():
 	global candles, trades
 
 	if SRC_FORMAT == 'platform': 
-		trades = utils.read_trades(sys.argv[1])
+		trades = futils.read_trades(sys.argv[1])
 	else:
-		trades = utils.read_trades_2(sys.argv[1])
+		trades = futils.read_trades_2(sys.argv[1])
 	if len(trades) == 0:
 		return False
 
-	trades = utils.trim_trades( trades )
+	trades = futils.trim_trades( trades )
 	if len(trades) == 0:
 		return False
 
-	(dt_min, dt_max) = utils.calculate_date_range_of_trades(trades)
+	(dt_min, dt_max) = futils.calculate_date_range_of_trades(trades)
 	dt_start = dt_min - timedelta(minutes = TIMEFRAME)
 	dt_end = dt_max + timedelta(minutes=TIMEFRAME*2)
 	sys.stderr.write( 'DATES INVOLVED: start: %s, end: %s' % ( str(dt_start), str(dt_end) ) )
 
 	# Importing candles...
 	candles = import_candles(TICKER, TIMEFRAME, dt_start, dt_end)
-	print(candles)
+	#print(candles)
 
-	utils.merge_candles_and_trades( candles, trades )
+	futils.merge_candles_and_trades( candles, trades )
 
 	return True
 # end of load_data
@@ -74,7 +64,7 @@ status = load_data()
 if not status:
 	sys.stderr.write('Zero trades found! Exiting...\n')
 	sys.exit(0)
-sys.stderr.write('Doing file %s' %(sys.argv[1]))
+sys.stderr.write('Doing file %s...\n' %(sys.argv[1]))
 len_trades = len(trades)
 
 
@@ -108,7 +98,7 @@ sys.stderr.write( 'pf = %f(%f), num_good=%d, num_bad=%d\n' % (pf,pf_pct,num_good
 
 # Calculating PnL
 pnl = {}
-utils.calculate_pnl(candles, trades, pnl, "trades_")
+futils.calculate_pnl(candles, trades, pnl, "trades_")
 
 
 if DEPOSIT < 0: # Estimating initial deposit if the one is not specified
@@ -123,7 +113,7 @@ if DEPOSIT < 0: # Estimating initial deposit if the one is not specified
 
 
 # Calculating REWARD-RISK
-utils.calculate_potential_returns( candles, trades, pnl, prefix='trades_' )
+futils.calculate_potential_returns( candles, trades, pnl, prefix='trades_' )
 risk = 0
 for t in range(len_trades):
 	if 'worst' in trades[t]:
@@ -187,9 +177,11 @@ else:
 sys.stderr.write( 'Num. stds in average trade = %f\n' % (num_stds_in_average_trade) )
 
 if PRINT_HEADER:
-	print('File, Ticker, Timeframe, Trades Num., Good, Bad, Profit Factor, Profit Factor(%), Reward/Risk, Sharpe, Num. Stds in Average Trade')
-print('%s, %s, %d, %d, %d, %d, %f, %f, %f, %f %f' % \
-	(sys.argv[1], TICKER, TIMEFRAME, len_trades, num_good, num_bad, pf, pf_pct, rr, sharpe, num_stds_in_average_trade))
+	print('File, Ticker, Timeframe, Profit/Loss, Trades Num., Good, Bad, Profit Factor, Profit Factor(%)'\
+		', Reward/Risk, Sharpe, Num. Stds in Average Trade')
+print('%s, %s, %d, %f, %d, %d, %d, %f, %f, %f, %f, %f' % \
+	(sys.argv[1], TICKER, TIMEFRAME, pnl['trades_pnl'][0], len_trades, num_good, num_bad, pf, pf_pct, rr, \
+	sharpe, num_stds_in_average_trade))
 
 import matplotlib.pyplot as plt
 plt.plot(time, actual_pnl)
