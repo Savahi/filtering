@@ -133,6 +133,16 @@ else:
 		rr = float('NaN')
 		sys.stderr.write("Can't calculate reward-risk!\n")
 
+# Calculating LOST Profit
+lost = 0
+for t in range(len_trades):
+	if 'best' in trades[t]:
+		if trades[t]['profit'] < 0:
+			lost += trades[t]['best']
+		elif trades[t]['best'] > trades[t]['profit']:
+			lost += (trades[t]['best'] - trades[t]['profit'])
+sys.stderr.write('Lost Profit = %f\n' % (lost))
+
 
 # Calculating SHARPE 
 pct_a_day = (1.0 + COMPARE_INTEREST_RATE_PCT / 100.0 / 365.0) # Daily risk-free interest 
@@ -178,10 +188,10 @@ sys.stderr.write( 'Num. stds in average trade = %f\n' % (num_stds_in_average_tra
 
 if PRINT_HEADER:
 	print('File, Ticker, Timeframe, Profit/Loss, Trades Num., Good, Bad, Profit Factor, Profit Factor(%)'\
-		', Reward/Risk, Sharpe, Num. Stds in Average Trade')
-print('%s, %s, %d, %f, %d, %d, %d, %f, %f, %f, %f, %f' % \
+		', Reward/Risk, Sharpe, Lost Profit, Num. Stds in Average Trade')
+print('%s, %s, %d, %f, %d, %d, %d, %f, %f, %f, %f, %f, %f' % \
 	(sys.argv[1], TICKER, TIMEFRAME, pnl['trades_pnl'][0], len_trades, num_good, num_bad, pf, pf_pct, rr, \
-	sharpe, num_stds_in_average_trade))
+	sharpe, lost, num_stds_in_average_trade))
 
 import matplotlib.pyplot as plt
 plt.plot(time, actual_pnl)
