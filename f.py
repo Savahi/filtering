@@ -19,30 +19,41 @@ USE_2_CLASSES_WITH_RANDOM_PICK = False # Make two classes and several models
 NUM_EPOCHS = 1000 # The number of EPOCHS to train your model through.
 TIMEFRAME = 15 # The time frame.
 TICKER = "btcusd" # The ticker.
-TRAIN_VS_TEST = 0.75
+TRAIN_VS_TEST = None
+NUM_CLASSES = None
 SRC_FORMAT = 'platform'
 MODEL_TYPE = 'nn'
 CREATE_MODEL = fmodels.create_nn_32x16x8  # fmodels.create_nn
 CALCULATE_INPUT = fmodels.calculate_input_r # fmodels.calculate_input_i
 PRINT_HEADER = False
-VERBOSE = False
+VERBOSE = True
+COMMISSION_PCT =0.0
+COMMISSION_ABS=0.0
+
+if re.search( r'\.lst$', sys.argv[1] ): # If a source file passed through command line ends with ".lst"...
+	sys.stderr.write('Reading list of source files...\n')
+	src = futils.read_list_of_files_with_trades( sys.argv[1] )
+	if len(src) == 0:
+		sys.stderr.write('Failed to load list of source files. Exiting...\n')
+		sys.exit(0)
+else: # A source passed though command line is a file name 
+	src = sys.argv[1]
 
 for a in range(2, len(sys.argv)): # Reading additional parameters
 	m = re.match(r'([a-zA-Z0-9\_ ]+=[0-9a-zA-Z \.\'\"\_]+)', sys.argv[a])
 	if m:
 		exec(m.group(1))
 
-
-res = futils.load_trades_and_candles( sys.argv[1], SRC_FORMAT, TICKER, TIMEFRAME, CALCULATE_INPUT('query_input')[0] )
+res = futils.load_trades_and_candles( src, SRC_FORMAT, TICKER, TIMEFRAME, 
+	extra_lookback_candles=CALCULATE_INPUT('query_input')[0], commission_pct=COMMISSION_PCT, commission_abs=COMMISSION_ABS )
 if res is None:
 	sys.stderr.write('Failed to load trades or candles. Exiting...\n')
 	sys.exit(0)
 candles = res['candles']
 trades = res['trades']
 
-
 res = futils.calculate_data_and_train_models(candles, trades, CREATE_MODEL, CALCULATE_INPUT,
-	threshold_abs=THRESHOLD_ABS, threshold_pct=THRESHOLD_PCT, train_vs_test=TRAIN_VS_TEST, 
+	threshold_abs=THRESHOLD_ABS, threshold_pct=THRESHOLD_PCT, train_vs_test=TRAIN_VS_TEST, num_classes=NUM_CLASSES,
 	use_weights_for_classes=USE_WEIGHTS_FOR_CLASSES, use_2_classes_with_random_pick=USE_2_CLASSES_WITH_RANDOM_PICK, 
 	num_models=NUM_MODELS, num_epochs=NUM_EPOCHS, verbose=VERBOSE )
 data=res['data']

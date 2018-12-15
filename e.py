@@ -17,7 +17,8 @@ SRC_FORMAT = 'platform'
 DEPOSIT = -1.0
 SHARPE_ITERATION = 48
 COMPARE_INTEREST_RATE_PCT = 5.0
-COMMISSION_PCT = 0.3
+COMMISSION_PCT=0.0
+COMMISSION_ABS=0.0
 PRINT_HEADER = False
 
 start_test_date = None
@@ -27,46 +28,27 @@ candles = None
 
 trades = {}
 
+if re.search( r'\.lst$', sys.argv[1] ): # If a source file passed through command line ends with ".lst"...
+	src = futils.read_list_of_files_with_trades( sys.argv[1] )
+	if len(src) == 0:
+		sys.exit(0)
+else: # A source passed though command line is a file name 
+	src = sys.argv[1]
+
 for a in range(2, len(sys.argv)): # Reading additional parameters
 	m = re.match(r'([a-zA-Z0-9\_ ]+=[0-9a-zA-Z \.\'\"\_]+)', sys.argv[a])
 	if m:
 		exec(m.group(1))
 
-def load_data():
-	global candles, trades
-
-	if SRC_FORMAT == 'platform': 
-		trades = futils.read_trades(sys.argv[1])
-	else:
-		trades = futils.read_trades_2(sys.argv[1])
-	if len(trades) == 0:
-		return False
-
-	trades = futils.trim_trades( trades )
-	if len(trades) == 0:
-		return False
-
-	(dt_min, dt_max) = futils.calculate_date_range_of_trades(trades)
-	dt_start = dt_min - timedelta(minutes = TIMEFRAME)
-	dt_end = dt_max + timedelta(minutes=TIMEFRAME*2)
-	sys.stderr.write( 'DATES INVOLVED: start: %s, end: %s' % ( str(dt_start), str(dt_end) ) )
-
-	# Importing candles...
-	candles = import_candles(TICKER, TIMEFRAME, dt_start, dt_end)
-	#print(candles)
-
-	futils.merge_candles_and_trades( candles, trades )
-
-	return True
-# end of load_data
-
-status = load_data() 
-if not status:
-	sys.stderr.write('Zero trades found! Exiting...\n')
+res = futils.load_trades_and_candles( src, SRC_FORMAT, TICKER, TIMEFRAME, extra_lookback_candles=1, 
+	commission_pct=COMMISSION_PCT, commission_abs=COMMISSION_ABS )
+if res is None:
+	sys.stderr.write('Failed to load trades or candles. Exiting...\n')
 	sys.exit(0)
-sys.stderr.write('Doing file %s...\n' %(sys.argv[1]))
-len_trades = len(trades)
+candles = res['candles']
+trades = res['trades']
 
+len_trades = len(trades)
 
 # Calculating profit factor 
 num_bad = 0

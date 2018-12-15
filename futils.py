@@ -165,13 +165,15 @@ def merge_candles_and_trades(candles, trades):
 # end of merge_candles_and_trades
 
 
-def trim_trades(trades, commission_pct=0.0):
+def trim_trades(trades, commission_pct=0.0, commission_abs=0.0, train_or_test=0):
 	len_trades = len(trades)
 
 	for i in range(len_trades):
 		if 'closing_trade' in trades[i]: # If the trade has already been marked as a closing one...
 			if trades[i]['closing_trade']: 
 				continue # ... 
+		if 'profit' in trades[i]: # If the trade has already been trimmed...
+			continue
 
 		position_id = trades[i]['position_id']
 		for j in range(i+1,len_trades): # Searching for the closing trade...
@@ -183,12 +185,15 @@ def trim_trades(trades, commission_pct=0.0):
 					profit = -profit
 				if commission_pct > 0.0:
 					profit -= np.abs(profit)*(commission_pct/100.0)
+				elif commission_abs > 0.0:
+					profit -= commission_abs
 				trades[i]['profit'] = profit
 				trades[i]['profit_pct'] = (profit * 100.0) / trades[i]['price']				
 				trades[i]['closing_price'] = trades[j]['price']
 				trades[i]['closing_time'] = trades[j]['time']
 				trades[i]['closing_time_seconds'] = trades[j]['time_seconds']
 				trades[i]['closing_time_dt'] = trades[j]['time_dt']
+				trades[i]['train_or_test'] = train_or_test
 				trades[j]['closing_trade'] = True
 				break
 
@@ -209,8 +214,9 @@ def trim_trades(trades, commission_pct=0.0):
 # the end of trim_trades()	
 
 
-def read_trades( file_name ):
-	trades = []
+def read_trades( file_name, trades=None ):
+	if trades is None:
+		trades = []
 
 	file_opened = False
 	
@@ -261,15 +267,16 @@ def read_trades( file_name ):
 # end of def	
 
 
-def read_trades_2( file_name ):
-	trades = []
+def read_trades_2( file_name, trades=None, last_positionId=-1 ):
+	if trades is None:
+		trades = []
 
 	file_opened = False
 	
 	num_lines_read = 0
 	num_lines_skipped  = 0
 
-	position_id = 0
+	position_id = last_positionId+1
 	first_position = True
 
 	try:
@@ -322,7 +329,7 @@ def read_trades_2( file_name ):
 	if file_opened:
 		file_handle.close()
 
-	return trades
+	return trades, position_id
 # end of def	
 
 def str_to_time( sDateTime ):
@@ -407,15 +414,20 @@ def calc_trades_in_every_bin(data, num_classes):
 	return( train_and_test, train, test)
 
 
-def load_trades_and_candles( src, src_format, ticker, timeframe, extra_lookback_candles=0 ):
-	if src_format == 'platform': 
-		trades = read_trades(src)
-	else:
-		trades = read_trades_2(src)
-	if len(trades) == 0:
-		return None
+def load_trades_and_candles( src, src_format, ticker, timeframe, extra_lookback_candles=0, commission_pct=0.0, commission_abs=0.0 ):
+	if isinstance( src, str ):
+		src = [ {'file_name':src, 'train_or_test':0 } ] # "1" stands for TRAIN, "2" stands for TEST, 0" stands for UNDEFINED
 
-	trades = trim_trades( trades )
+	trades = []
+	position_id = -1 # For "read_trades_2" position_id is required if a set of files with trades has been loaded
+	for s in range(len(src)):
+		file_name = src[s]['file_name']
+		train_or_test = int(src[s]['train_or_test'])
+		if src_format == 'platform': 
+			trades = read_trades(file_name, trades)
+		else:
+			trades, poition_id = read_trades_2(file_name, trades, position_id)
+		trades = trim_trades( trades, train_or_test=train_or_test, commission_pct=commission_pct, commission_abs=commission_abs )			
 	if len(trades) == 0:
 		return None
 
@@ -444,7 +456,7 @@ def load_trades_and_candles( src, src_format, ticker, timeframe, extra_lookback_
 
 
 def calculate_data_and_train_models(candles, trades, create_model_fn, calculate_input_fn, threshold_abs=0.0, threshold_pct=0.0, \
-			train_vs_test=0.75, use_weights_for_classes=False, use_2_classes_with_random_pick=False, 
+			train_vs_test=None, num_classes=None, use_weights_for_classes=False, use_2_classes_with_random_pick=False, 
 			num_models=1, num_epochs=1000, verbose=False):
 	data = {}
 	data['train_inputs'] = []
@@ -487,7 +499,8 @@ def calculate_data_and_train_models(candles, trades, create_model_fn, calculate_
 	if use_weights_for_classes or use_2_classes_with_random_pick: # With weights or random pick only 2 classes are allowed...
 		num_classes = 2
 	else:
-		num_classes = int( float(num_bad) / float(num_good) + 0.9 ) + 1
+		if num_classes is None:
+			num_classes = int( float(num_bad) / float(num_good) + 0.9 ) + 1			
 		sys.stderr.write("num_classes=%d\n" % (num_classes))
 		if num_classes > 1:
 			trades_sorted = [ x for _, x in sorted(zip( data['profit_pct'], data['trade_num'] )) ] # Trade numbers sorted by profit 
@@ -518,16 +531,30 @@ def calculate_data_and_train_models(candles, trades, create_model_fn, calculate_
 
 	# Splitting for train and test
 	len_data = len(data['trade_num'])
-	last_train_trade = int(len_data * (1.0 - train_vs_test))
-	sys.stderr.write('%d - %d' % (len_data,last_train_trade))
+	if train_vs_test is not None:  
+		last_train_trade = int(len_data * (1.0 - train_vs_test))
+		sys.stderr.write('Data size = %d (train = %d)' % (len_data,last_train_trade))
+	else:
+		last_train_trade = None
+		sys.stderr.write('Data size = %d' % (len_data))
+
 	for t in range(len_data):
-		if data['trade_num'][t] > last_train_trade:
+		if last_train_trade is not None:
+			if data['trade_num'][t] > last_train_trade:
+				train_or_test = 2
+			else:
+				train_or_test = 1
+		else:
+			trade_num = data['trade_num'][t]
+			train_or_test = trades[trade_num]['train_or_test']
+
+		if train_or_test == 1: # Train
 			data['train_inputs'].append(data['inputs'][t])
 			data['train_outputs'].append(data['outputs'][t])
 			data['train_profit'].append(data['profit'][t])
 			data['train_profit_pct'].append(data['profit_pct'][t])
 			data['train_trade_num'].append(data['trade_num'][t])
-		else:
+		else: # Test
 			data['test_inputs'].append(data['inputs'][t])
 			data['test_outputs'].append(data['outputs'][t])
 			data['test_profit'].append(data['profit'][t])
@@ -604,3 +631,42 @@ def calculate_data_and_train_models(candles, trades, create_model_fn, calculate_
 
 	return { 'data':data, 'scaler':scaler, 'models':models, 'num_classes':num_classes, 'num_good':num_good, 'num_bad':num_bad }
 # end of load_data
+
+
+def read_list_of_files_with_trades( file_name ):
+	sys.stderr.write( "Reading list of files with trades...\n" )
+
+	list_of_files = []
+
+	file_opened = False
+	
+	num_lines_read = 0
+	num_lines_skipped  = 0
+
+	try:
+		file_handle = open(file_name, "r")
+		file_opened = True
+
+		for line in file_handle:
+			print(line)
+			re_line = re.match( r'^ *([a-zA-Z0-9\/\_\-\.]+) *\t *([0-9])[ \t\r\n]*$', line, re.M|re.I )
+			if re_line:
+				list_of_files.append( { 'file_name':re_line.group(1), 'train_or_test': re_line.group(2) } )
+				num_lines_read += 1
+			else:
+				re_line = re.match( r'^ *([a-zA-Z0-9\/\_\-\.]+)[ \t\r\n]*$', line, re.M|re.I )
+				if re_line:
+					list_of_files.append( { 'file_name':re_line.group(1), 'train_or_test': 0 } )
+					num_lines_read += 1
+				else:
+					num_lines_skipped += 1
+	except IOError:
+		sys.stderr.write( "Error: can\'t find file " + file_name + " or read data.\n" )
+	else:
+		sys.stderr.write( "Lines read = %d, lines skipped = %d.\n" % (num_lines_read, num_lines_skipped) )
+
+	if file_opened:
+		file_handle.close()
+
+	return list_of_files
+# end of def	
