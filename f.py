@@ -27,8 +27,9 @@ CREATE_MODEL = fmodels.create_nn_32x16x8  # fmodels.create_nn
 CALCULATE_INPUT = fmodels.calculate_input_r # fmodels.calculate_input_i
 PRINT_HEADER = False
 VERBOSE = True
-COMMISSION_PCT =0.0
+COMMISSION_PCT=0.0
 COMMISSION_ABS=0.0
+FILTER_BY_WORST_CLASS = False
 
 if re.search( r'\.lst$', sys.argv[1] ): # If a source file passed through command line ends with ".lst"...
 	sys.stderr.write('Reading list of source files...\n')
@@ -39,10 +40,12 @@ if re.search( r'\.lst$', sys.argv[1] ): # If a source file passed through comman
 else: # A source passed though command line is a file name 
 	src = sys.argv[1]
 
+command_line_arguments = ''
 for a in range(2, len(sys.argv)): # Reading additional parameters
 	m = re.match(r'([a-zA-Z0-9\_ ]+=[0-9a-zA-Z \.\'\"\_]+)', sys.argv[a])
 	if m:
 		exec(m.group(1))
+	command_line_arguments += ' ' + sys.argv[a]
 
 res = futils.load_trades_and_candles( src, SRC_FORMAT, TICKER, TIMEFRAME, 
 	extra_lookback_candles=CALCULATE_INPUT('query_input')[0], commission_pct=COMMISSION_PCT, commission_abs=COMMISSION_ABS )
@@ -78,30 +81,42 @@ for t in range(len(data['test_inputs'])):
 	#inp = scaler.transform(inp)		
 	trade_num = data['test_trade_num'][t]
 	profit = trades[trade_num]['profit']
-	num_models_that_allowed_trade = 0
+
+	if not FILTER_BY_WORST_CLASS:
+		filter_class = num_classes-1
+	else:
+		filter_class = 0
+	num_models_that_confirmed_filter_class = 0
 
 	for m in range(num_models): # Iterating through all the models trained to obtain predictions
 		prediction = models[m].predict_proba( inp )[0]
 		sys.stderr.write(str(prediction) + "\n")
 		sys.stderr.write(str(data['test_outputs'][t]) + "\n")
-		if np.argmax(prediction) == num_classes-1: 
-			if prediction[num_classes-1] > PREDICTION_THRESHOLD * 1.0/num_classes:
-				num_models_that_allowed_trade += 1
+		if np.argmax(prediction) == filter_class: 
+			if prediction[filter_class] > PREDICTION_THRESHOLD * 1.0/num_classes:
+				num_models_that_confirmed_filter_class += 1
 	
 	profit_actual += profit
 	num_trades += 1
 
 	trades_actual.append(trades[trade_num])
 
-	if num_models_that_allowed_trade == num_models:
-		trades_oked.append(trades[trade_num])
+	oked = False
+	if not FILTER_BY_WORST_CLASS: # Filtering by best class
+		if num_models_that_confirmed_filter_class == num_models:
+			oked = True
+	else: # Filtering by worst class
+		if num_models_that_confirmed_filter_class < num_models:
+			oked = True
 
+	if oked: # If oked...
+		trades_oked.append(trades[trade_num])
 		profit_optimized += profit
 		num_trades_oked += 1			
 		if MODEL_TYPE == 'nn':
-			right = data['test_outputs'][t][num_classes-1] == 1
+			right = data['test_outputs'][t][filter_class] == 1
 		else:
-			right = data['test_outputs'][t] == num_classes - 1
+			right = data['test_outputs'][t] == filter_class
 
 		if right:
 			oked_right += 1
@@ -112,8 +127,8 @@ for t in range(len(data['test_inputs'])):
 		(num_trades, num_trades_oked, oked_right, oked_wrong, profit_actual, profit_optimized))
 
 if PRINT_HEADER:
-	print("File, Num. of Trades, Num. of Trades Allowed, +, -, Profit, Optimized Profit")
-print("%s, %d, %d, %d, %d, %f, %f" % (sys.argv[1], num_trades, num_trades_oked, oked_right, oked_wrong, profit_actual, profit_optimized))
+	print("File, Num. of Trades, Num. of Trades Allowed, +, -, Profit, Optimized Profit, CMA")
+print("%s, %d, %d, %d, %d, %f, %f %s" % (sys.argv[1], num_trades, num_trades_oked, oked_right, oked_wrong, profit_actual, profit_optimized, command_line_arguments))
 
 pnl = {}
 futils.calculate_pnl(candles, trades_actual, pnl, "trades_actual_")

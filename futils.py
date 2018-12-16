@@ -165,7 +165,7 @@ def merge_candles_and_trades(candles, trades):
 # end of merge_candles_and_trades
 
 
-def trim_trades(trades, commission_pct=0.0, commission_abs=0.0, train_or_test=0):
+def trim_trades(trades, train_or_test=0, src_id=0, commission_pct=0.0, commission_abs=0.0):
 	len_trades = len(trades)
 
 	for i in range(len_trades):
@@ -194,6 +194,7 @@ def trim_trades(trades, commission_pct=0.0, commission_abs=0.0, train_or_test=0)
 				trades[i]['closing_time_seconds'] = trades[j]['time_seconds']
 				trades[i]['closing_time_dt'] = trades[j]['time_dt']
 				trades[i]['train_or_test'] = train_or_test
+				trades[i]['src_id'] = src_id
 				trades[j]['closing_trade'] = True
 				break
 
@@ -332,7 +333,7 @@ def read_trades_2( file_name, trades=None, last_positionId=-1 ):
 	return trades, position_id
 # end of def	
 
-def str_to_time( sDateTime ):
+def str_to_time( sDateTime, round_to_minutes=False ):
 	
 	iDateTime = None
 	dtDateTime = None
@@ -350,7 +351,10 @@ def str_to_time( sDateTime ):
 		iDay = int ( sDay )
 		iH = int (sH )
 		iM = int (sM)
-		iS = int (sS)
+		if not round_to_minutes:
+			iS = int (sS)
+		else:
+			iS = 0
 		dtDateTime = datetime( iYear, iMonth, iDay, iH, iM, iS )
 		iDateTime = time_to_seconds( dtDateTime )
 	else:
@@ -368,6 +372,10 @@ def str_to_time( sDateTime ):
 			iH = int (sH )
 			iM = int (sM)
 			iS = int (sS)
+			if not round_to_minutes:
+				iS = int (sS)
+			else:
+				iS = 0
 			dtDateTime = datetime( iYear, iMonth, iDay, iH, iM, iS )
 			iDateTime = time_to_seconds( dtDateTime )
 
@@ -414,7 +422,8 @@ def calc_trades_in_every_bin(data, num_classes):
 	return( train_and_test, train, test)
 
 
-def load_trades_and_candles( src, src_format, ticker, timeframe, extra_lookback_candles=0, commission_pct=0.0, commission_abs=0.0 ):
+def load_trades_and_candles( src, src_format, ticker, timeframe, 
+	extra_lookback_candles=0, extra_lookahead_candles=0, commission_pct=0.0, commission_abs=0.0 ):
 	if isinstance( src, str ):
 		src = [ {'file_name':src, 'train_or_test':0 } ] # "1" stands for TRAIN, "2" stands for TEST, 0" stands for UNDEFINED
 
@@ -427,7 +436,7 @@ def load_trades_and_candles( src, src_format, ticker, timeframe, extra_lookback_
 			trades = read_trades(file_name, trades)
 		else:
 			trades, poition_id = read_trades_2(file_name, trades, position_id)
-		trades = trim_trades( trades, train_or_test=train_or_test, commission_pct=commission_pct, commission_abs=commission_abs )			
+		trades = trim_trades( trades, src_id=s, train_or_test=train_or_test, commission_pct=commission_pct, commission_abs=commission_abs )			
 	if len(trades) == 0:
 		return None
 
@@ -442,7 +451,7 @@ def load_trades_and_candles( src, src_format, ticker, timeframe, extra_lookback_
 
 	# Calculating train and test starting and ending dates
 	dt_start = dt_min - timedelta(minutes = timeframe * (extra_lookback_candles + 1))
-	dt_end = dt_max + timedelta(minutes=timeframe*2)
+	dt_end = dt_max + timedelta(minutes=timeframe*(2+extra_lookahead_candles))
 
 	sys.stderr.write( 'DATES INVOLVED: start: %s, end: %s\n' % ( str(dt_start), str(dt_end) ) )
 
@@ -578,7 +587,7 @@ def calculate_data_and_train_models(candles, trades, create_model_fn, calculate_
 		outputs = data['train_outputs']
 		num_trades = num_good + num_bad
 		for m in range(num_models):
-			cw = { 0: int(num_good*100.0/num_trades), 1: int(num_bad*100.0/num_trades) }
+			cw = { 0: num_good*100.0/num_trades, 1: num_bad*100.0/num_trades }
 			if one_hot: # A NN
 				model = create_model_fn(num_features, num_classes) # Creating a model
 				model.fit(inputs, outputs, epochs=num_epochs, class_weight=cw, verbose=verbose)
@@ -648,7 +657,6 @@ def read_list_of_files_with_trades( file_name ):
 		file_opened = True
 
 		for line in file_handle:
-			print(line)
 			re_line = re.match( r'^ *([a-zA-Z0-9\/\_\-\.]+) *\t *([0-9])[ \t\r\n]*$', line, re.M|re.I )
 			if re_line:
 				list_of_files.append( { 'file_name':re_line.group(1), 'train_or_test': re_line.group(2) } )
