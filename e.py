@@ -4,18 +4,16 @@ if len(sys.argv) < 2:
 	sys.exit()
 
 from datetime import datetime, timedelta
-from tradingene.data.load import import_data, import_candles
 import numpy as np
 import matplotlib.pyplot as plt 
 from random import randint
 import re 
-import futils
+import eutils, futils
 
 TIMEFRAME = 30 # The time frame.
 TICKER = "btcusd" # The ticker.
 SRC_FORMAT = 'platform'
 DEPOSIT = -1.0
-SHARPE_ITERATION = 48
 COMPARE_INTEREST_RATE_PCT = 5.0
 COMMISSION_PCT=0.0
 COMMISSION_ABS=0.0
@@ -48,6 +46,19 @@ if res is None:
 candles = res['candles']
 trades = res['trades']
 
+e = eutils.estimate(candles, trades, TIMEFRAME, COMPARE_INTEREST_RATE_PCT, DEPOSIT)
+
+
+if PRINT_HEADER:
+	print('File, Ticker, Timeframe, Profit/Loss, Trades Num., Good, Bad, Profit Factor, Profit Factor(%)'\
+		', Sharpe, Reward/Risk, Lost Profit')
+print('%s, %s, %d, %f, %d, %d, %d, %f, %f, %f, %f, %f' % \
+	(sys.argv[1], TICKER, TIMEFRAME, e['pnl']['pnl'][0], e['num_trades'], e['num_good'], e['num_bad'], \
+	e['pf'], e['pf_pct'], e['sharpe'], e['rr'], e['lp']))
+
+
+
+'''
 len_trades = len(trades)
 
 # Calculating profit factor 
@@ -80,7 +91,7 @@ sys.stderr.write( 'pf = %f(%f), num_good=%d, num_bad=%d\n' % (pf,pf_pct,num_good
 
 # Calculating PnL
 pnl = {}
-futils.calculate_pnl(candles, trades, pnl, "trades_")
+futils.calculate_pnl(candles, trades, pnl, prefix="trades_")
 
 
 if DEPOSIT < 0: # Estimating initial deposit if the one is not specified
@@ -156,26 +167,14 @@ else:
 sys.stderr.write('sharpe=%f\n'%(sharpe))
 
 
-# How many stds in average trade 
-profit_by_trade = []
-for t in range(len_trades):
-	profit_by_trade.append(trades[t]['profit'])
-
-std = np.std(profit_by_trade)
-if std > 0:
-	num_stds_in_average_trade = np.mean(profit_by_trade) / std
-else:
-	num_stds_in_average_trade = float('NaN')
-sys.stderr.write( 'Num. stds in average trade = %f\n' % (num_stds_in_average_trade) )
-
 if PRINT_HEADER:
 	print('File, Ticker, Timeframe, Profit/Loss, Trades Num., Good, Bad, Profit Factor, Profit Factor(%)'\
-		', Reward/Risk, Sharpe, Lost Profit, Num. Stds in Average Trade')
-print('%s, %s, %d, %f, %d, %d, %d, %f, %f, %f, %f, %f, %f' % \
-	(sys.argv[1], TICKER, TIMEFRAME, pnl['trades_pnl'][0], len_trades, num_good, num_bad, pf, pf_pct, rr, \
-	sharpe, lost, num_stds_in_average_trade))
+		', Reward/Risk, Sharpe, Lost Profit')
+print('%s, %s, %d, %f, %d, %d, %d, %f, %f, %f, %f, %f' % \
+	(sys.argv[1], TICKER, TIMEFRAME, pnl['trades_pnl'][0], len_trades, num_good, num_bad, pf, pf_pct, rr, sharpe, lost))
 
 import matplotlib.pyplot as plt
 plt.plot(time, actual_pnl)
 plt.plot(time, compare_pnl_with)
 plt.savefig(sys.argv[1] + ".png")
+'''

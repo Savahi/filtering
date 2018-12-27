@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from sklearn.preprocessing import StandardScaler
 from tradingene.data.load import import_candles
 import re
+import keras
 from pandas import Series  
 import numpy as np
 from random import randint
@@ -19,7 +20,7 @@ def calculate_date_range_of_trades(trades):
 	return(dt_min, dt_max)
 
 
-def calculate_pnl( candles, trades, pnl, prefix='_' ):
+def calculate_pnl( candles, trades, pnl, prefix='' ):
 	len_trades = len(trades)
 	len_candles = len(candles['close'])
 
@@ -36,7 +37,7 @@ def calculate_pnl( candles, trades, pnl, prefix='_' ):
 	if not time_key in pnl:
 		pnl[time_key] = [None]*len_candles
 		for c in range(len_candles):
-			(_, tm) = str_to_time( str(candles['time'][c]) )
+			(_, tm) = str_to_time( str( candles['time'].iloc[c] ) )
 			pnl[time_key][c] = tm
 
 	for t in range(len_trades):
@@ -51,7 +52,7 @@ def calculate_pnl( candles, trades, pnl, prefix='_' ):
 		pnl[pnl_key][c] += pnl[pnl_key][c+1] + pnl[return_key][c] 
 
 
-def calculate_potential_returns( candles, trades, pnl, prefix='_' ):
+def calculate_potential_returns( candles, trades, pnl, prefix='' ):
 	len_trades = len(trades)
 	len_candles = len(candles['close'])
 
@@ -78,14 +79,14 @@ def calculate_potential_returns( candles, trades, pnl, prefix='_' ):
 		worst_worst = 0
 		for c in range(opening_candle,closing_candle,-1): # Not counting the latest candle
 			if trades[t]['side'] == 1:
-				best = candles['high'][c] - trades[t]['price']
-				worst = trades[t]['price'] - candles['low'][c]
+				best = candles['high'].iloc[c] - trades[t]['price']
+				worst = trades[t]['price'] - candles['low'].iloc[c]
 				#print('worst=%f'%(worst))
 				pnl[potential_best_return_key][c] += best
 				pnl[potential_worst_return_key][c] += worst
 			elif trades[t]['side'] == -1:
-				best = trades[t]['price'] - candles['low'][c]
-				worst = candles['high'][c] - trades[t]['price'] 
+				best = trades[t]['price'] - candles['low'].iloc[c]
+				worst = candles['high'].iloc[c] - trades[t]['price'] 
 				#print('worst=%f'%(worst))
 				pnl[potential_best_return_key][c] += best
 				pnl[potential_worst_return_key][c] += worst
@@ -128,37 +129,67 @@ def merge_candles_and_trades(candles, trades):
 	len_trades = len(trades)
 	len_candles = len(candles['close'])
 
+	ctimes = np.array(candles['time'], dtype=np.uint64)
 	for t in range(len_trades):
-		for c in range(len_candles-1,-1,-1):
-			candle_found = False
-			if candles['time'][c] == trades[t]['time']: # The candle related to a trade is found...
+		sys.stderr.write('Merging trades: %d/%d\r' % (t,len_trades))
+		# candle_found = False
+		indexes = np.argwhere( ctimes >= trades[t]['time'] )
+		if len(indexes) == 0:
+			continue
+		c = indexes[-1][0]
+		if ctimes[c] == trades[t]['time']: # The candle related to a trade is found...
+			trades[t]['opening_candle'] = c
+			trades[t]['opening_at_candle_start'] = True
+		elif ctimes[c] > trades[t]['time']:
+			if c < len_candles-1:
+				trades[t]['opening_candle'] = c+1
+			else:
 				trades[t]['opening_candle'] = c
-				trades[t]['opening_at_candle_start'] = True
-				candle_found = True
-			elif candles['time'][c] > trades[t]['time']:
-				if c < len_candles-1:
-					trades[t]['opening_candle'] = c+1
-				else:
-					trades[t]['opening_candle'] = c
-				trades[t]['opening_at_candle_start'] = False
-				candle_found = True
-			if not candle_found:
-				continue
-				
-			for c2 in range(c,-1,-1):
-				if candles['time'][c2] == trades[t]['closing_time']: # The candle related to a trade is found...
-					trades[t]['closing_candle'] = c2
-					trades[t]['closing_at_candle_start'] = True
-					break
-				if candles['time'][c2] > trades[t]['closing_time']: # The candle related to a trade is found...
-					if c2 < len_candles-1:
-						trades[t]['closing_candle'] = c2+1
-					else:
-						trades[t]['closing_candle'] = c2						
-					trades[t]['closing_at_candle_start'] = False
-					break
-			break
+			trades[t]['opening_at_candle_start'] = False
 
+		indexes2 = np.argwhere( ctimes >= trades[t]['closing_time'] )
+		if len(indexes2) == 0:
+			continue
+		c2 = indexes2[-1][0]
+		if ctimes[c2] == trades[t]['closing_time']: # The candle related to a trade is found...
+			trades[t]['closing_candle'] = c2
+			trades[t]['closing_at_candle_start'] = True
+		elif ctimes[c2] > trades[t]['closing_time']: # The candle related to a trade is found...
+			if c2 < len_candles-1:
+				trades[t]['closing_candle'] = c2+1
+			else:
+				trades[t]['closing_candle'] = c2						
+			trades[t]['closing_at_candle_start'] = False
+		
+		'''
+		if candles['time'].iloc[c] == trades[t]['time']: # The candle related to a trade is found...
+			trades[t]['opening_candle'] = c
+			trades[t]['opening_at_candle_start'] = True
+			candle_found = True
+		elif candles['time'].iloc[c] > trades[t]['time']:
+			if c < len_candles-1:
+				trades[t]['opening_candle'] = c+1
+			else:
+				trades[t]['opening_candle'] = c
+			trades[t]['opening_at_candle_start'] = False
+			candle_found = True
+		if not candle_found:
+			continue
+			
+		for c2 in range(c,-1,-1):
+			if candles['time'].iloc[c2] == trades[t]['closing_time']: # The candle related to a trade is found...
+				trades[t]['closing_candle'] = c2
+				trades[t]['closing_at_candle_start'] = True
+				break
+			if candles['time'].iloc[c2] > trades[t]['closing_time']: # The candle related to a trade is found...
+				if c2 < len_candles-1:
+					trades[t]['closing_candle'] = c2+1
+				else:
+					trades[t]['closing_candle'] = c2						
+				trades[t]['closing_at_candle_start'] = False
+				break
+		break
+		'''
 	for t in range(len_trades):
 		if not 'closing_candle' in trades[t]:
 			sys.stderr.write("NO CLOSING CANDLE HAS BEEN FOUND FOR TRADE ID " + str(trades[t]['position_id']) + ".\n")
@@ -395,27 +426,14 @@ def calc_trades_in_every_bin(data, num_classes):
 	test = [0]*num_classes
 	train_and_test = [0]*num_classes
 
-	if isinstance(data['train_outputs'][0], np.ndarray) or isinstance(data['train_outputs'][0], list):
-		one_hot = True
-	else:
-		one_hot = False
-	
 	for d in range(len(data['train_outputs'])):
-		if one_hot:
-			for c in range( num_classes ):
-				if data['train_outputs'][d][c] == 1:
-					train[c] += 1
-		else:					
-			c = data['train_outputs'][d]
-			train[c] += 1
+		for c in range( num_classes ):
+			if data['train_outputs'][d][c] == 1:
+				train[c] += 1
 	for d in range(len(data['test_outputs'])):
-		if one_hot:
-			for c in range( num_classes ):
-				if data['test_outputs'][d][c] == 1:
-					test[c] += 1
-		else:					
-			c = data['test_outputs'][d]
-			test[c] += 1
+		for c in range( num_classes ):
+			if data['test_outputs'][d][c] == 1:
+				test[c] += 1
 	for c in range(num_classes):
 		train_and_test[c] = train[c] + test[c]
 
@@ -423,7 +441,7 @@ def calc_trades_in_every_bin(data, num_classes):
 
 
 def load_trades_and_candles( src, src_format, ticker, timeframe, 
-	extra_lookback_candles=0, extra_lookahead_candles=0, commission_pct=0.0, commission_abs=0.0 ):
+	extra_lookback_candles=0, extra_lookahead_candles=0, commission_pct=0.0, commission_abs=0.0, splitSides=False ):
 	if isinstance( src, str ):
 		src = [ {'file_name':src, 'train_or_test':0 } ] # "1" stands for TRAIN, "2" stands for TEST, 0" stands for UNDEFINED
 
@@ -436,7 +454,12 @@ def load_trades_and_candles( src, src_format, ticker, timeframe,
 			trades = read_trades(file_name, trades)
 		else:
 			trades, poition_id = read_trades_2(file_name, trades, position_id)
-		trades = trim_trades( trades, src_id=s, train_or_test=train_or_test, commission_pct=commission_pct, commission_abs=commission_abs )			
+		if not 'file_id' in src[s]:
+			src_id = s
+		else:
+			src_id = int(src[s]['file_id'])
+		trades = trim_trades( trades, src_id=src_id, train_or_test=train_or_test, 
+			commission_pct=commission_pct, commission_abs=commission_abs )			
 	if len(trades) == 0:
 		return None
 
@@ -466,7 +489,8 @@ def load_trades_and_candles( src, src_format, ticker, timeframe,
 
 def calculate_data_and_train_models(candles, trades, create_model_fn, calculate_input_fn, threshold_abs=0.0, threshold_pct=0.0, \
 			train_vs_test=None, num_classes=None, use_weights_for_classes=False, use_2_classes_with_random_pick=False, 
-			num_models=1, num_epochs=1000, verbose=False):
+			num_models=1, num_epochs=1000, verbose=False, filter_by_side=None, activation=None, optimizer=None, 
+			units_multiplier=None, samples_multiplier=None, num_hidden_layers=None):
 	data = {}
 	data['train_inputs'] = []
 	data['train_outputs'] = []
@@ -482,17 +506,11 @@ def calculate_data_and_train_models(candles, trades, create_model_fn, calculate_
 	lookback_candles, num_features = calculate_input_fn('query_input')
 	calculate_all_inputs( candles, trades, data, calculate_input_fn, lookback_candles )
 
-	one_hot = create_model_fn('query_one_hot')
-
 	# Searching for "good" and "bad" trades... 
 	num_bad = 0
 	num_good = 0
-	if one_hot:
-		output_good = [0,1]
-		output_bad = [1,0]
-	else:
-		output_good = 1
-		output_bad = 0 
+	output_good = [0,1]
+	output_bad = [1,0]
 	for t in range(len(data['trade_num'])): # "trade_num" is the index in the "trades" array
 		profit = data['profit'][t]
 		profit_pct = data['profit_pct'][t]
@@ -517,15 +535,12 @@ def calculate_data_and_train_models(candles, trades, create_model_fn, calculate_
 				startIndex = int( b * (num_good + num_bad) / (num_classes) ) # Starting and ending indexes within the trades_sorted array
 				endIndex = int( (b+1) * (num_good + num_bad) / (num_classes) )
 
-				if one_hot: # Assigning a "one-hot" output with the right significant bin... 
-					output = [] 
-					for i in range( num_classes ):
-						if i == b:
-							output.append(1)
-						else:
-							output.append(0)
-				else:
-					output = b
+				output = [] 
+				for i in range( num_classes ):
+					if i == b:
+						output.append(1)
+					else:
+						output.append(0)
 
 				for i in range( startIndex, endIndex ):
 					trade_num = trades_sorted[i] #
@@ -548,6 +563,11 @@ def calculate_data_and_train_models(candles, trades, create_model_fn, calculate_
 		sys.stderr.write('Data size = %d' % (len_data))
 
 	for t in range(len_data):
+		if filter_by_side is not None: 			# If filtering by side is required...
+			trade_num = data['trade_num'][t]
+			if trades[trade_num]['side'] != filter_by_side:
+				continue
+
 		if last_train_trade is not None:
 			if data['trade_num'][t] > last_train_trade:
 				train_or_test = 2
@@ -571,16 +591,27 @@ def calculate_data_and_train_models(candles, trades, create_model_fn, calculate_
 			data['test_trade_num'].append(data['trade_num'][t])
 	# end of "for"
 
+	if len(data['train_inputs']) <= 1 or len(data['test_inputs']) < 1:
+		return None
+
 	data['train_inputs'] = np.array(data['train_inputs'])
 	data['train_outputs'] = np.array(data['train_outputs'])
 	data['test_inputs'] = np.array(data['test_inputs'])
 	data['test_outputs'] = np.array(data['test_outputs'])
 
-	scaler = StandardScaler() # Creating an instance of a scaler.
-	scaler.fit(data['train_inputs']) # Fitting the scaler.
-	data['train_inputs'] = scaler.transform(data['train_inputs']) # Normalizing data
-	data['test_inputs'] = scaler.transform(data['test_inputs']) # Normalizing data
-	
+	#scaler = StandardScaler() # Creating an instance of a scaler.
+	#scaler.fit(data['train_inputs']) # Fitting the scaler.
+	#data['train_inputs'] = scaler.transform(data['train_inputs']) # Normalizing data
+	#data['test_inputs'] = scaler.transform(data['test_inputs']) # Normalizing data
+	scaler=None
+
+	if units_multiplier is not None:
+		multiplier = units_multiplier
+	elif samples_multiplier is not None:
+		multiplier = int( float(len(data['train_inputs'])) * float(samples_multiplier) )
+	else:
+		multiplier = None
+
 	models = []
 	if use_weights_for_classes:
 		inputs = data['train_inputs']
@@ -588,12 +619,10 @@ def calculate_data_and_train_models(candles, trades, create_model_fn, calculate_
 		num_trades = num_good + num_bad
 		for m in range(num_models):
 			cw = { 0: num_good*100.0/num_trades, 1: num_bad*100.0/num_trades }
-			if one_hot: # A NN
-				model = create_model_fn(num_features, num_classes) # Creating a model
-				model.fit(inputs, outputs, epochs=num_epochs, class_weight=cw, verbose=verbose)
-			else: # An SVM
-				model = create_model_fn(num_epochs, cw) # Creating a model
-				model.fit(inputs, outputs, verbose=verbose)				
+			model = create_model_fn(num_features, num_classes, 
+				activation=activation, optimizer=optimizer, 
+				units_multiplier=multiplier, num_hidden_layers=num_hidden_layers) # Creating a model
+			model.fit(inputs, outputs, epochs=num_epochs, class_weight=cw, verbose=verbose)
 			models.append( model )
 	elif use_2_classes_with_random_pick:
 		num_models = int( float(num_bad) / float(num_good) + 0.9 )
@@ -606,12 +635,8 @@ def calculate_data_and_train_models(candles, trades, create_model_fn, calculate_
 					# random pick
 					while(True):
 						random_pick = randint(0, len_outputs-1)
-						if one_hot: # A NN
-							if data['train_outputs'][random_pick][1] == 1:
-								continue
-						else: # An SVM
-							if data['train_outputs'][random_pick] == 1:
-								continue
+						if data['train_outputs'][random_pick][1] == 1:
+							continue
 						inputs = np.delete(inputs, (random_pick), axis=0)
 						outputs = np.delete(outputs, (random_pick), axis=0)
 						len_outputs -= 1
@@ -619,23 +644,19 @@ def calculate_data_and_train_models(candles, trades, create_model_fn, calculate_
 			else:
 				inputs = data['train_inputs']
 				outputs = data['train_outputs']
-			if one_hot:
-				model = create_model_fn(num_features, num_classes) # Creating a model
-				model.fit( inputs, outputs, epochs=num_epochs, verbose=verbose ) # Training the model
-			else:
-				model = create_model_fn(num_epochs) # Creating a model
-				model.fit( inputs, outputs, verbose=verbose ) # Training the model				
+			model = create_model_fn(num_features, num_classes, 
+				activation=activation, optimizer=optimizer, 
+				units_multiplier=multiplier, num_hidden_layers=num_hidden_layers) # Creating a model
+			model.fit( inputs, outputs, epochs=num_epochs, verbose=verbose ) # Training the model
 			models.append( model )
 	else:
 		inputs = data['train_inputs']
 		outputs = data['train_outputs']
 		for m in range(num_models):
-			if one_hot:
-				model = create_model_fn(num_features, num_classes) # Creating a model
-				model.fit( inputs, outputs, epochs=num_epochs, verbose=verbose ) # Training the model
-			else:
-				model = create_model_fn(num_epochs) # Creating a model
-				model.fit( inputs, outputs, verbose=verbose ) # Training the model				
+			model = create_model_fn(num_features, num_classes, 
+				optimizer=optimizer, activation=activation,  
+				units_multiplier=multiplier, num_hidden_layers=num_hidden_layers) # Creating a model
+			model.fit( inputs, outputs, epochs=num_epochs, verbose=verbose ) # Training the model
 			models.append( model )
 
 	return { 'data':data, 'scaler':scaler, 'models':models, 'num_classes':num_classes, 'num_good':num_good, 'num_bad':num_bad }
@@ -643,7 +664,7 @@ def calculate_data_and_train_models(candles, trades, create_model_fn, calculate_
 
 
 def read_list_of_files_with_trades( file_name ):
-	sys.stderr.write( "Reading list of files with trades...\n" )
+	#sys.stderr.write( "Reading list of files with trades...\n" )
 
 	list_of_files = []
 
@@ -657,17 +678,24 @@ def read_list_of_files_with_trades( file_name ):
 		file_opened = True
 
 		for line in file_handle:
-			re_line = re.match( r'^ *([a-zA-Z0-9\/\_\-\.]+) *\t *([0-9])[ \t\r\n]*$', line, re.M|re.I )
+			re_line = re.match( r'^ *([a-zA-Z0-9\/\_\-\.]+) *\t *([0-9])[ \t\r\n]*$', line, re.M|re.I ) # File name \t train_or_test
 			if re_line:
-				list_of_files.append( { 'file_name':re_line.group(1), 'train_or_test': re_line.group(2) } )
+				list_of_files.append( { 'file_name':re_line.group(1), 'train_or_test': int(re_line.group(2)) } )
 				num_lines_read += 1
 			else:
-				re_line = re.match( r'^ *([a-zA-Z0-9\/\_\-\.]+)[ \t\r\n]*$', line, re.M|re.I )
+				re_line = re.match( r'^ *([a-zA-Z0-9\/\_\-\.]+)[ \t\r\n]*$', line, re.M|re.I ) # File name only
 				if re_line:
 					list_of_files.append( { 'file_name':re_line.group(1), 'train_or_test': 0 } )
 					num_lines_read += 1
-				else:
-					num_lines_skipped += 1
+				else: # File name \t id \t train_or_test ?
+					re_line = re.match( r'^ *([a-zA-Z0-9\/\_\-\.]+) *\t *([0-9]+) *\t *([0-9])[ \t\r\n]*$', line, re.M|re.I ) 
+					if re_line:
+						list_of_files.append( { 'file_name':re_line.group(1), \
+							'file_id':int(re_line.group(2)), \
+							'train_or_test': int(re_line.group(3)) } )
+						num_lines_read += 1
+					else:
+						num_lines_skipped += 1
 	except IOError:
 		sys.stderr.write( "Error: can\'t find file " + file_name + " or read data.\n" )
 	else:

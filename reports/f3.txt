@@ -1,0 +1,220 @@
+data/ivan/tr_decis_n_2_e_266.csv	1
+
+data/ivan/val_decis_n_2_e_266.csv	2
+
+f/266.lst, 8, 1, 0, 1, -572.500000, -1021.900000
+data/ivan/tr_decis_n_0_e_288.csv	1
+
+data/ivan/val_decis_n_0_e_288.csv	2
+
+data/ivan/tr_decis_n_0_e_330.csv	1	
+
+data/ivan/val_decis_n_0_e_330.csv	2	
+
+f/330.lst, 24, 4, 1, 3, -1491.300000, -717.400000
+data/ivan/tr_decis_n_1_e_362.csv	1
+
+data/ivan/val_decis_n_1_e_362.csv	2
+data/ivan/tr_decis_n_0_e_288.csv	1
+
+data/ivan/tr_decis_n_0_e_330.csv	1	
+
+data/ivan/tr_decis_n_0_e_369.csv	1
+
+data/ivan/tr_decis_n_1_e_362.csv	1
+
+data/ivan/tr_decis_n_1_e_491.csv	1
+
+data/ivan/tr_decis_n_1_e_497.csv	1
+
+data/ivan/tr_decis_n_2_e_266.csv	1
+
+data/ivan/val_decis_n_0_e_288.csv	2
+
+data/ivan/val_decis_n_0_e_330.csv	2	
+
+data/ivan/val_decis_n_0_e_369.csv	2
+
+data/ivan/val_decis_n_1_e_362.csv	2
+
+data/ivan/val_decis_n_1_e_491.csv	2
+
+data/ivan/val_decis_n_1_e_497.csv	2
+
+data/ivan/val_decis_n_2_e_266.csv	2
+
+f.lst, 71, 70, 17, 53, -3964.900000, -3714.800000
+data/ivan/tr_decis_n_0_e_288.csv	1
+
+data/ivan/tr_decis_n_0_e_330.csv	1	
+
+data/ivan/tr_decis_n_0_e_369.csv	1
+
+data/ivan/tr_decis_n_1_e_362.csv	1
+
+data/ivan/tr_decis_n_1_e_491.csv	1
+
+data/ivan/tr_decis_n_1_e_497.csv	1
+
+data/ivan/tr_decis_n_2_e_266.csv	1
+
+data/ivan/val_decis_n_0_e_288.csv	2
+
+data/ivan/val_decis_n_0_e_330.csv	2	
+
+data/ivan/val_decis_n_0_e_369.csv	2
+
+data/ivan/val_decis_n_1_e_362.csv	2
+
+data/ivan/val_decis_n_1_e_491.csv	2
+
+data/ivan/val_decis_n_1_e_497.csv	2
+
+data/ivan/val_decis_n_2_e_266.csv	2
+
+data/ivan/tr_decis_n_0_e_288.csv	1
+
+data/ivan/tr_decis_n_0_e_330.csv	1	
+
+data/ivan/tr_decis_n_0_e_369.csv	1
+
+data/ivan/tr_decis_n_1_e_362.csv	1
+
+data/ivan/tr_decis_n_1_e_491.csv	1
+
+data/ivan/tr_decis_n_1_e_497.csv	1
+
+data/ivan/tr_decis_n_2_e_266.csv	1
+
+data/ivan/val_decis_n_0_e_288.csv	2
+
+data/ivan/val_decis_n_0_e_330.csv	2	
+
+data/ivan/val_decis_n_0_e_369.csv	2
+
+data/ivan/val_decis_n_1_e_362.csv	2
+
+data/ivan/val_decis_n_1_e_491.csv	2
+
+data/ivan/val_decis_n_1_e_497.csv	2
+
+data/ivan/val_decis_n_2_e_266.csv	2
+
+data/ivan/tr_decis_n_0_e_288.csv	1
+
+data/ivan/tr_decis_n_0_e_330.csv	1	
+
+data/ivan/tr_decis_n_0_e_369.csv	1
+
+data/ivan/tr_decis_n_1_e_362.csv	1
+
+data/ivan/tr_decis_n_1_e_491.csv	1
+
+data/ivan/tr_decis_n_1_e_497.csv	1
+
+data/ivan/tr_decis_n_2_e_266.csv	1
+
+data/ivan/val_decis_n_0_e_288.csv	2
+
+data/ivan/val_decis_n_0_e_330.csv	2	
+
+data/ivan/val_decis_n_0_e_369.csv	2
+
+data/ivan/val_decis_n_1_e_362.csv	2
+
+data/ivan/val_decis_n_1_e_491.csv	2
+
+data/ivan/val_decis_n_1_e_497.csv	2
+
+data/ivan/val_decis_n_2_e_266.csv	2
+
+[{'train_or_test': '1', 'file_name': 'data/ivan/tr_decis_n_0_e_288.csv'}, {'train_or_test': '1', 'file_name': 'data/ivan/tr_decis_n_0_e_330.csv'}, {'train_or_test': '1', 'file_name': 'data/ivan/tr_decis_n_0_e_369.csv'}, {'train_or_test': '1', 'file_name': 'data/ivan/tr_decis_n_1_e_362.csv'}, {'train_or_test': '1', 'file_name': 'data/ivan/tr_decis_n_1_e_491.csv'}, {'train_or_test': '1', 'file_name': 'data/ivan/tr_decis_n_1_e_497.csv'}, {'train_or_test': '1', 'file_name': 'data/ivan/tr_decis_n_2_e_266.csv'}, {'train_or_test': '2', 'file_name': 'data/ivan/val_decis_n_0_e_288.csv'}, {'train_or_test': '2', 'file_name': 'data/ivan/val_decis_n_0_e_330.csv'}, {'train_or_test': '2', 'file_name': 'data/ivan/val_decis_n_0_e_369.csv'}, {'train_or_test': '2', 'file_name': 'data/ivan/val_decis_n_1_e_362.csv'}, {'train_or_test': '2', 'file_name': 'data/ivan/val_decis_n_1_e_491.csv'}, {'train_or_test': '2', 'file_name': 'data/ivan/val_decis_n_1_e_497.csv'}, {'train_or_test': '2', 'file_name': 'data/ivan/val_decis_n_2_e_266.csv'}]
+data/ivan/tr_decis_n_0_e_288.csv	1
+
+data/ivan/tr_decis_n_0_e_330.csv	1	
+
+data/ivan/tr_decis_n_0_e_369.csv	1
+
+data/ivan/tr_decis_n_1_e_362.csv	1
+
+data/ivan/tr_decis_n_1_e_491.csv	1
+
+data/ivan/tr_decis_n_1_e_497.csv	1
+
+data/ivan/tr_decis_n_2_e_266.csv	1
+
+data/ivan/val_decis_n_0_e_288.csv	2
+
+data/ivan/val_decis_n_0_e_330.csv	2	
+
+data/ivan/val_decis_n_0_e_369.csv	2
+
+data/ivan/val_decis_n_1_e_362.csv	2
+
+data/ivan/val_decis_n_1_e_491.csv	2
+
+data/ivan/val_decis_n_1_e_497.csv	2
+
+data/ivan/val_decis_n_2_e_266.csv	2
+
+src=[{'train_or_test': '1', 'file_name': 'data/ivan/tr_decis_n_0_e_288.csv'}, {'train_or_test': '1', 'file_name': 'data/ivan/tr_decis_n_0_e_330.csv'}, {'train_or_test': '1', 'file_name': 'data/ivan/tr_decis_n_0_e_369.csv'}, {'train_or_test': '1', 'file_name': 'data/ivan/tr_decis_n_1_e_362.csv'}, {'train_or_test': '1', 'file_name': 'data/ivan/tr_decis_n_1_e_491.csv'}, {'train_or_test': '1', 'file_name': 'data/ivan/tr_decis_n_1_e_497.csv'}, {'train_or_test': '1', 'file_name': 'data/ivan/tr_decis_n_2_e_266.csv'}, {'train_or_test': '2', 'file_name': 'data/ivan/val_decis_n_0_e_288.csv'}, {'train_or_test': '2', 'file_name': 'data/ivan/val_decis_n_0_e_330.csv'}, {'train_or_test': '2', 'file_name': 'data/ivan/val_decis_n_0_e_369.csv'}, {'train_or_test': '2', 'file_name': 'data/ivan/val_decis_n_1_e_362.csv'}, {'train_or_test': '2', 'file_name': 'data/ivan/val_decis_n_1_e_491.csv'}, {'train_or_test': '2', 'file_name': 'data/ivan/val_decis_n_1_e_497.csv'}, {'train_or_test': '2', 'file_name': 'data/ivan/val_decis_n_2_e_266.csv'}]
+data/ivan/tr_decis_n_0_e_288.csv	1
+
+data/ivan/tr_decis_n_0_e_330.csv	1	
+
+data/ivan/tr_decis_n_0_e_369.csv	1
+
+data/ivan/tr_decis_n_1_e_362.csv	1
+
+data/ivan/tr_decis_n_1_e_491.csv	1
+
+data/ivan/tr_decis_n_1_e_497.csv	1
+
+data/ivan/tr_decis_n_2_e_266.csv	1
+
+data/ivan/val_decis_n_0_e_288.csv	2
+
+data/ivan/val_decis_n_0_e_330.csv	2	
+
+data/ivan/val_decis_n_0_e_369.csv	2
+
+data/ivan/val_decis_n_1_e_362.csv	2
+
+data/ivan/val_decis_n_1_e_491.csv	2
+
+data/ivan/val_decis_n_1_e_497.csv	2
+
+data/ivan/val_decis_n_2_e_266.csv	2
+
+src=[{'file_name': 'data/ivan/tr_decis_n_0_e_288.csv', 'train_or_test': '1'}, {'file_name': 'data/ivan/tr_decis_n_0_e_330.csv', 'train_or_test': '1'}, {'file_name': 'data/ivan/tr_decis_n_0_e_369.csv', 'train_or_test': '1'}, {'file_name': 'data/ivan/tr_decis_n_1_e_362.csv', 'train_or_test': '1'}, {'file_name': 'data/ivan/tr_decis_n_1_e_491.csv', 'train_or_test': '1'}, {'file_name': 'data/ivan/tr_decis_n_1_e_497.csv', 'train_or_test': '1'}, {'file_name': 'data/ivan/tr_decis_n_2_e_266.csv', 'train_or_test': '1'}, {'file_name': 'data/ivan/val_decis_n_0_e_288.csv', 'train_or_test': '2'}, {'file_name': 'data/ivan/val_decis_n_0_e_330.csv', 'train_or_test': '2'}, {'file_name': 'data/ivan/val_decis_n_0_e_369.csv', 'train_or_test': '2'}, {'file_name': 'data/ivan/val_decis_n_1_e_362.csv', 'train_or_test': '2'}, {'file_name': 'data/ivan/val_decis_n_1_e_491.csv', 'train_or_test': '2'}, {'file_name': 'data/ivan/val_decis_n_1_e_497.csv', 'train_or_test': '2'}, {'file_name': 'data/ivan/val_decis_n_2_e_266.csv', 'train_or_test': '2'}]
+data/ivan/tr_decis_n_0_e_288.csv	1
+
+data/ivan/tr_decis_n_0_e_330.csv	1	
+
+data/ivan/tr_decis_n_0_e_369.csv	1
+
+data/ivan/tr_decis_n_1_e_362.csv	1
+
+data/ivan/tr_decis_n_1_e_491.csv	1
+
+data/ivan/tr_decis_n_1_e_497.csv	1
+
+data/ivan/tr_decis_n_2_e_266.csv	1
+
+data/ivan/val_decis_n_0_e_288.csv	2
+
+data/ivan/val_decis_n_0_e_330.csv	2	
+
+data/ivan/val_decis_n_0_e_369.csv	2
+
+data/ivan/val_decis_n_1_e_362.csv	2
+
+data/ivan/val_decis_n_1_e_491.csv	2
+
+data/ivan/val_decis_n_1_e_497.csv	2
+
+data/ivan/val_decis_n_2_e_266.csv	2
+
+f.lst, 378, 258, 56, 202, -8346.560000, -5995.150000  SRC_FORMAT="nn" TIMEFRAME=15 TRAIN_VS_TEST=None NUM_CLASSES=None TICKER="btcusd" THRESHOLD_PCT=0.7 PREDICTION_THRESHOLD=1.75
+f.lst, 378, 77, 18, 59, -8346.560000, -9950.420000  SRC_FORMAT="nn" TIMEFRAME=15 TRAIN_VS_TEST=None NUM_CLASSES=3 TICKER="btcusd" THRESHOLD_PCT=0.7 PREDICTION_THRESHOLD=1.75
+f.lst, 378, 133, 31, 102, -8346.560000, -5961.370000  SRC_FORMAT="nn" TIMEFRAME=15 TRAIN_VS_TEST=None NUM_CLASSES=5 TICKER="btcusd" THRESHOLD_PCT=0.7 PREDICTION_THRESHOLD=1.75

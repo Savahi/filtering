@@ -57,7 +57,6 @@
 python3 e.py data/ivan/val_decis_n_0_e_288.csv SRC_FORMAT=\'nn\' TIMEFRAME=15 TICKER=\'btcusd\' >> e.txt
 python3 e.py data/ivan/val_decis_n_0_e_330.csv SRC_FORMAT=\'nn\' TIMEFRAME=15 TICKER=\'btcusd\' >> e.txt
 python3 e.py data/ivan/val_decis_n_0_e_369.csv SRC_FORMAT=\'nn\' TIMEFRAME=15 TICKER=\'btcusd\' >> e.txt
-python3 e.py data/ivan/val_decis_n_1_e_362.csv SRC_FORMAT=\'nn\' TIMEFRAME=15 TICKER=\'btcusd\' >> e.txt
 python3 e.py data/ivan/val_decis_n_1_e_491.csv SRC_FORMAT=\'nn\' TIMEFRAME=15 TICKER=\'btcusd\' >> e.txt
 python3 e.py data/ivan/val_decis_n_1_e_497.csv SRC_FORMAT=\'nn\' TIMEFRAME=15 TICKER=\'btcusd\' >> e.txt
 python3 e.py data/ivan/val_decis_n_2_e_266.csv SRC_FORMAT=\'nn\' TIMEFRAME=15 TICKER=\'btcusd\' >> e.txt

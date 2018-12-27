@@ -1,217 +1,44 @@
-data/ivan/tr_decis_n_2_e_266.csv	1
 
-data/ivan/val_decis_n_2_e_266.csv	2
-
-f/266.lst, 8, 1, 0, 1, -572.500000, -1021.900000
-data/ivan/tr_decis_n_0_e_288.csv	1
-
-data/ivan/val_decis_n_0_e_288.csv	2
-
-data/ivan/tr_decis_n_0_e_330.csv	1	
-
-data/ivan/val_decis_n_0_e_330.csv	2	
-
-f/330.lst, 24, 4, 1, 3, -1491.300000, -717.400000
-data/ivan/tr_decis_n_1_e_362.csv	1
-
-data/ivan/val_decis_n_1_e_362.csv	2
-data/ivan/tr_decis_n_0_e_288.csv	1
-
-data/ivan/tr_decis_n_0_e_330.csv	1	
-
-data/ivan/tr_decis_n_0_e_369.csv	1
-
-data/ivan/tr_decis_n_1_e_362.csv	1
-
-data/ivan/tr_decis_n_1_e_491.csv	1
-
-data/ivan/tr_decis_n_1_e_497.csv	1
-
-data/ivan/tr_decis_n_2_e_266.csv	1
-
-data/ivan/val_decis_n_0_e_288.csv	2
-
-data/ivan/val_decis_n_0_e_330.csv	2	
-
-data/ivan/val_decis_n_0_e_369.csv	2
-
-data/ivan/val_decis_n_1_e_362.csv	2
-
-data/ivan/val_decis_n_1_e_491.csv	2
-
-data/ivan/val_decis_n_1_e_497.csv	2
-
-data/ivan/val_decis_n_2_e_266.csv	2
-
-f.lst, 71, 70, 17, 53, -3964.900000, -3714.800000
-data/ivan/tr_decis_n_0_e_288.csv	1
-
-data/ivan/tr_decis_n_0_e_330.csv	1	
-
-data/ivan/tr_decis_n_0_e_369.csv	1
-
-data/ivan/tr_decis_n_1_e_362.csv	1
-
-data/ivan/tr_decis_n_1_e_491.csv	1
-
-data/ivan/tr_decis_n_1_e_497.csv	1
-
-data/ivan/tr_decis_n_2_e_266.csv	1
-
-data/ivan/val_decis_n_0_e_288.csv	2
-
-data/ivan/val_decis_n_0_e_330.csv	2	
-
-data/ivan/val_decis_n_0_e_369.csv	2
-
-data/ivan/val_decis_n_1_e_362.csv	2
-
-data/ivan/val_decis_n_1_e_491.csv	2
-
-data/ivan/val_decis_n_1_e_497.csv	2
-
-data/ivan/val_decis_n_2_e_266.csv	2
-
-data/ivan/tr_decis_n_0_e_288.csv	1
-
-data/ivan/tr_decis_n_0_e_330.csv	1	
-
-data/ivan/tr_decis_n_0_e_369.csv	1
-
-data/ivan/tr_decis_n_1_e_362.csv	1
-
-data/ivan/tr_decis_n_1_e_491.csv	1
-
-data/ivan/tr_decis_n_1_e_497.csv	1
-
-data/ivan/tr_decis_n_2_e_266.csv	1
-
-data/ivan/val_decis_n_0_e_288.csv	2
-
-data/ivan/val_decis_n_0_e_330.csv	2	
-
-data/ivan/val_decis_n_0_e_369.csv	2
-
-data/ivan/val_decis_n_1_e_362.csv	2
-
-data/ivan/val_decis_n_1_e_491.csv	2
-
-data/ivan/val_decis_n_1_e_497.csv	2
-
-data/ivan/val_decis_n_2_e_266.csv	2
-
-data/ivan/tr_decis_n_0_e_288.csv	1
-
-data/ivan/tr_decis_n_0_e_330.csv	1	
-
-data/ivan/tr_decis_n_0_e_369.csv	1
-
-data/ivan/tr_decis_n_1_e_362.csv	1
-
-data/ivan/tr_decis_n_1_e_491.csv	1
-
-data/ivan/tr_decis_n_1_e_497.csv	1
-
-data/ivan/tr_decis_n_2_e_266.csv	1
-
-data/ivan/val_decis_n_0_e_288.csv	2
-
-data/ivan/val_decis_n_0_e_330.csv	2	
-
-data/ivan/val_decis_n_0_e_369.csv	2
-
-data/ivan/val_decis_n_1_e_362.csv	2
-
-data/ivan/val_decis_n_1_e_491.csv	2
-
-data/ivan/val_decis_n_1_e_497.csv	2
-
-data/ivan/val_decis_n_2_e_266.csv	2
-
-[{'train_or_test': '1', 'file_name': 'data/ivan/tr_decis_n_0_e_288.csv'}, {'train_or_test': '1', 'file_name': 'data/ivan/tr_decis_n_0_e_330.csv'}, {'train_or_test': '1', 'file_name': 'data/ivan/tr_decis_n_0_e_369.csv'}, {'train_or_test': '1', 'file_name': 'data/ivan/tr_decis_n_1_e_362.csv'}, {'train_or_test': '1', 'file_name': 'data/ivan/tr_decis_n_1_e_491.csv'}, {'train_or_test': '1', 'file_name': 'data/ivan/tr_decis_n_1_e_497.csv'}, {'train_or_test': '1', 'file_name': 'data/ivan/tr_decis_n_2_e_266.csv'}, {'train_or_test': '2', 'file_name': 'data/ivan/val_decis_n_0_e_288.csv'}, {'train_or_test': '2', 'file_name': 'data/ivan/val_decis_n_0_e_330.csv'}, {'train_or_test': '2', 'file_name': 'data/ivan/val_decis_n_0_e_369.csv'}, {'train_or_test': '2', 'file_name': 'data/ivan/val_decis_n_1_e_362.csv'}, {'train_or_test': '2', 'file_name': 'data/ivan/val_decis_n_1_e_491.csv'}, {'train_or_test': '2', 'file_name': 'data/ivan/val_decis_n_1_e_497.csv'}, {'train_or_test': '2', 'file_name': 'data/ivan/val_decis_n_2_e_266.csv'}]
-data/ivan/tr_decis_n_0_e_288.csv	1
-
-data/ivan/tr_decis_n_0_e_330.csv	1	
-
-data/ivan/tr_decis_n_0_e_369.csv	1
-
-data/ivan/tr_decis_n_1_e_362.csv	1
-
-data/ivan/tr_decis_n_1_e_491.csv	1
-
-data/ivan/tr_decis_n_1_e_497.csv	1
-
-data/ivan/tr_decis_n_2_e_266.csv	1
-
-data/ivan/val_decis_n_0_e_288.csv	2
-
-data/ivan/val_decis_n_0_e_330.csv	2	
-
-data/ivan/val_decis_n_0_e_369.csv	2
-
-data/ivan/val_decis_n_1_e_362.csv	2
-
-data/ivan/val_decis_n_1_e_491.csv	2
-
-data/ivan/val_decis_n_1_e_497.csv	2
-
-data/ivan/val_decis_n_2_e_266.csv	2
-
-src=[{'train_or_test': '1', 'file_name': 'data/ivan/tr_decis_n_0_e_288.csv'}, {'train_or_test': '1', 'file_name': 'data/ivan/tr_decis_n_0_e_330.csv'}, {'train_or_test': '1', 'file_name': 'data/ivan/tr_decis_n_0_e_369.csv'}, {'train_or_test': '1', 'file_name': 'data/ivan/tr_decis_n_1_e_362.csv'}, {'train_or_test': '1', 'file_name': 'data/ivan/tr_decis_n_1_e_491.csv'}, {'train_or_test': '1', 'file_name': 'data/ivan/tr_decis_n_1_e_497.csv'}, {'train_or_test': '1', 'file_name': 'data/ivan/tr_decis_n_2_e_266.csv'}, {'train_or_test': '2', 'file_name': 'data/ivan/val_decis_n_0_e_288.csv'}, {'train_or_test': '2', 'file_name': 'data/ivan/val_decis_n_0_e_330.csv'}, {'train_or_test': '2', 'file_name': 'data/ivan/val_decis_n_0_e_369.csv'}, {'train_or_test': '2', 'file_name': 'data/ivan/val_decis_n_1_e_362.csv'}, {'train_or_test': '2', 'file_name': 'data/ivan/val_decis_n_1_e_491.csv'}, {'train_or_test': '2', 'file_name': 'data/ivan/val_decis_n_1_e_497.csv'}, {'train_or_test': '2', 'file_name': 'data/ivan/val_decis_n_2_e_266.csv'}]
-data/ivan/tr_decis_n_0_e_288.csv	1
-
-data/ivan/tr_decis_n_0_e_330.csv	1	
-
-data/ivan/tr_decis_n_0_e_369.csv	1
-
-data/ivan/tr_decis_n_1_e_362.csv	1
-
-data/ivan/tr_decis_n_1_e_491.csv	1
-
-data/ivan/tr_decis_n_1_e_497.csv	1
-
-data/ivan/tr_decis_n_2_e_266.csv	1
-
-data/ivan/val_decis_n_0_e_288.csv	2
-
-data/ivan/val_decis_n_0_e_330.csv	2	
-
-data/ivan/val_decis_n_0_e_369.csv	2
-
-data/ivan/val_decis_n_1_e_362.csv	2
-
-data/ivan/val_decis_n_1_e_491.csv	2
-
-data/ivan/val_decis_n_1_e_497.csv	2
-
-data/ivan/val_decis_n_2_e_266.csv	2
-
-src=[{'file_name': 'data/ivan/tr_decis_n_0_e_288.csv', 'train_or_test': '1'}, {'file_name': 'data/ivan/tr_decis_n_0_e_330.csv', 'train_or_test': '1'}, {'file_name': 'data/ivan/tr_decis_n_0_e_369.csv', 'train_or_test': '1'}, {'file_name': 'data/ivan/tr_decis_n_1_e_362.csv', 'train_or_test': '1'}, {'file_name': 'data/ivan/tr_decis_n_1_e_491.csv', 'train_or_test': '1'}, {'file_name': 'data/ivan/tr_decis_n_1_e_497.csv', 'train_or_test': '1'}, {'file_name': 'data/ivan/tr_decis_n_2_e_266.csv', 'train_or_test': '1'}, {'file_name': 'data/ivan/val_decis_n_0_e_288.csv', 'train_or_test': '2'}, {'file_name': 'data/ivan/val_decis_n_0_e_330.csv', 'train_or_test': '2'}, {'file_name': 'data/ivan/val_decis_n_0_e_369.csv', 'train_or_test': '2'}, {'file_name': 'data/ivan/val_decis_n_1_e_362.csv', 'train_or_test': '2'}, {'file_name': 'data/ivan/val_decis_n_1_e_491.csv', 'train_or_test': '2'}, {'file_name': 'data/ivan/val_decis_n_1_e_497.csv', 'train_or_test': '2'}, {'file_name': 'data/ivan/val_decis_n_2_e_266.csv', 'train_or_test': '2'}]
-data/ivan/tr_decis_n_0_e_288.csv	1
-
-data/ivan/tr_decis_n_0_e_330.csv	1	
-
-data/ivan/tr_decis_n_0_e_369.csv	1
-
-data/ivan/tr_decis_n_1_e_362.csv	1
-
-data/ivan/tr_decis_n_1_e_491.csv	1
-
-data/ivan/tr_decis_n_1_e_497.csv	1
-
-data/ivan/tr_decis_n_2_e_266.csv	1
-
-data/ivan/val_decis_n_0_e_288.csv	2
-
-data/ivan/val_decis_n_0_e_330.csv	2	
-
-data/ivan/val_decis_n_0_e_369.csv	2
-
-data/ivan/val_decis_n_1_e_362.csv	2
-
-data/ivan/val_decis_n_1_e_491.csv	2
-
-data/ivan/val_decis_n_1_e_497.csv	2
-
-data/ivan/val_decis_n_2_e_266.csv	2
-
+  32/1948 [..............................] - ETA: 2s
+1948/1948 [==============================] - 0s 32us/step
+f2.lst, 114, 44, 16, 28, 1805.660000, -85.040000, 0: 0/0,  acc: 60.88%
+,  NUM_CLASSES=3 TICKER="btcusd" SAMPLES_MULTIPLIER=0.05 NUM_EPOCHS=2000 THRESHOLD_PCT=0.7 PREDICTION_THRESHOLD=0.1
+
+  32/1948 [..............................] - ETA: 2s
+1948/1948 [==============================] - 0s 41us/step
+f2.lst, 114, 53, 24, 29, 1805.660000, 534.350000, 0: 0/0,  acc: 58.68%
+,  NUM_CLASSES=3 TICKER="btcusd" SAMPLES_MULTIPLIER=0.1 NUM_EPOCHS=2000 THRESHOLD_PCT=0.7 PREDICTION_THRESHOLD=0.1
+
+  32/1948 [..............................] - ETA: 2s
+1948/1948 [==============================] - 0s 36us/step
+f2.lst, 114, 10, 3, 7, 1805.660000, -89.090000, 0: 0/0,  acc: 51.64%
+,  NUM_CLASSES=3 OPTIMIZER=keras.optimizers.Adam(lr=0.0001) SAMPLES_MULTIPLIER=0.05 NUM_EPOCHS=2000 THRESHOLD_PCT=0.7 PREDICTION_THRESHOLD=0.1
+
+  32/1948 [..............................] - ETA: 2s
+1948/1948 [==============================] - 0s 37us/step
+f2.lst, 114, 2, 0, 2, 1805.660000, -104.960000, 0: 0/0,  acc: 60.06%
+,  NUM_CLASSES=3 TICKER="btcusd" SAMPLES_MULTIPLIER=0.05 NUM_EPOCHS=2000 THRESHOLD_PCT=0.7 PREDICTION_THRESHOLD=0.2
+
+  32/1948 [..............................] - ETA: 2s
+1948/1948 [==============================] - 0s 38us/step
+f2.lst, 114, 9, 4, 5, 1805.660000, 126.940000, 0: 0/0,  acc: 60.32%
+,  NUM_CLASSES=3 TICKER="btcusd" SAMPLES_MULTIPLIER=0.1 NUM_EPOCHS=2000 THRESHOLD_PCT=0.7 PREDICTION_THRESHOLD=0.2
+
+  32/1948 [..............................] - ETA: 2s
+1948/1948 [==============================] - 0s 37us/step
+f2.lst, 114, 1, 0, 1, 1805.660000, 8.900000, 0: 0/0,  acc: 50.41%
+,  NUM_CLASSES=3 OPTIMIZER=keras.optimizers.Adam(lr=0.0001) SAMPLES_MULTIPLIER=0.1 NUM_EPOCHS=2000 THRESHOLD_PCT=0.7 PREDICTION_THRESHOLD=0.2
+
+  32/1948 [..............................] - ETA: 2s
+1948/1948 [==============================] - 0s 38us/step
+
+  32/1948 [..............................] - ETA: 2s
+1948/1948 [==============================] - 0s 39us/step
+
+  32/1948 [..............................] - ETA: 2s
+1948/1948 [==============================] - 0s 32us/step
+
+  32/1948 [..............................] - ETA: 2s
+1948/1948 [==============================] - 0s 36us/step
+f2.lst, 114, 45, 16, 29, 1805.660000, 22.460000, 0: 0/11: 0/12: 0/13: 0/14: 1/25: 0/16: 0/17: 0/38: 11/99: 1/310: 3/6,  acc: 57.60%
+,  NUM_CLASSES=3 SAMPLES_MULTIPLIER=0.05 NUM_EPOCHS=2000 THRESHOLD_PCT=0.7 PREDICTION_THRESHOLD=0.05
